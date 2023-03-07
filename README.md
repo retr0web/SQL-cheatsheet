@@ -495,3 +495,108 @@ Aggregate functions combine multiple rows together to form a single value of mor
 <hr>
 
 ## Multiple tables
+
+### Combining Tables with SQL
+```
+SELECT *
+FROM orders
+JOIN customers
+  ON orders.customer_id = customers.customer_id;
+```
+```
+SELECT *
+FROM orders
+JOIN subscriptions
+  ON orders.subscription_id = subscriptions.subscription_id
+WHERE subscriptions.description = 'Fashion Magazine';
+```
+
+### LEFT JOIN
+What if we want to combine two tables and keep some of the un-matched rows?
+
+SQL lets us do this through a command called LEFT JOIN. A left join will keep all rows from the first table, regardless of whether there is a matching row in the second table.
+```
+SELECT *
+FROM table1
+LEFT JOIN table2
+  ON table1.c2 = table2.c2;
+```
+```
+SELECT *
+FROM newspaper
+LEFT JOIN online
+  ON newspaper.id = online.id
+  WHERE online.id IS NULL;
+```
+### Primary Key vs Foreign Key
+Recall that we had three tables: orders, subscriptions, and customers.
+
+Each of these tables has a column that uniquely identifies each row of that table:
+- order_id for orders
+- subscription_id for subscriptions
+- customer_id for customers
+These special columns are called primary keys.
+
+Primary keys have a few requirements:
+- None of the values can be NULL.
+- Each value must be unique (i.e., you can’t have two customers with the same customer_id in the customers table).
+- A table can not have more than one primary key column.
+
+When the primary key for one table appears in a different table, it is called a foreign key.
+
+### CROSS JOIN
+Sometimes, we just want to combine all rows of one table with all rows of another table.
+```
+SELECT shirts.shirt_color,
+   pants.pants_color
+FROM shirts
+CROSS JOIN pants;
+```
+> **Note**
+> <br>Notice that cross joins don’t require an ON statement.
+
+```
+SELECT month, COUNT(*)
+FROM newspaper
+CROSS JOIN months
+WHERE start_month <= month AND end_month >= month
+GROUP BY month;
+```
+
+### UNION
+Sometimes we just want to stack one dataset on top of the other. Well, the UNION operator allows us to do that.
+
+Suppose we have two tables and they have the same columns.
+```
+SELECT *
+FROM table1
+UNION
+SELECT *
+FROM table2;
+```
+SQL has strict rules for appending data:
+- Tables must have the same number of columns.
+- The columns must have the same data types in the same order as the first table.
+
+### WITH
+The WITH clause stores the result of a query in a temporary table (temporary_movies) using an alias.
+
+Multiple temporary tables can be defined with one instance of the WITH keyword.
+```
+WITH temporary_movies AS (
+   SELECT *
+   FROM movies
+)
+SELECT *
+FROM temporary_movies
+WHERE year BETWEEN 2000 AND 2020;
+```
+
+### To sum up:
+- JOIN will combine rows from different tables if the join condition is true.
+- LEFT JOIN will return every row in the left table, and if the join condition is not met, NULL values are used to fill in the columns from the right table.
+- Primary key is a column that serves a unique identifier for the rows in the table.
+- Foreign key is a column that contains the primary key to another table.
+- CROSS JOIN lets us combine all rows of one table with all rows of another table.
+- UNION stacks one dataset on top of another.
+- WITH allows us to define one or more temporary tables that can be used in the final query.
